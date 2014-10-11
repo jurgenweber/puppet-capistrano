@@ -1,0 +1,93 @@
+#capistrano 3 deploy script
+#https://github.com/capistrano/capistrano
+
+#some tests to ensure we have everything correct
+abort("wrong user, needs to be www-data") if ENV['USER'] != 'www-data'
+
+#variables:
+set :branch, ENV['branch'] || "master"
+set :log_level, ENV['loglevel'] || "info"
+
+# Deployment server info
+set :application, "#{fetch :country_id}_shop"
+set :deploy_to, "<%= @application_root_dir %>/#{fetch :stage}/#{fetch :country_id}"
+set :tmp_dir, "#{fetch :deploy_to}/shared/tmp"
+local_user = Etc.getlogin
+
+set :filter, roles: [:"#{fetch :country_id}_front", :"#{fetch :country_id}_cron"]
+
+# SCM info
+#custom hostname in ssh/config file to use another ssh key
+set :scm,         :git
+set :repo_url,    "github-shop-new:foodpanda/shop-new.git"
+
+# General config stuff
+set :linked_files,      [ "app/config/parameters.yml" ] # This stops us from having to recreate the parameters file on every deploy.
+set :keep_releases, 3   #because of a bug with this feature just running it manulally, below in the deploy 'after' namespace
+set :linked_dirs,       [ "#{fetch :app_path}/logs", "#{fetch :web_path}/uploads", "bower_components", "vendor" ]
+set :permission_method, :acl
+
+# Confirmations will not be requested from the command line.
+set :interactive_mode, false
+set :copy_exclude, [".git/*", ".svn/*", ".DS_Store", ".gitignore"]
+
+# User details for the production server
+set :use_sudo, false
+set :ssh_options, {
+  forward_agent: true,
+  user: 'www-data'
+}
+
+namespace :app_name do
+  task :start do
+    run_locally do
+      tag_name = capture("git ls-remote github-shop-new:foodpanda/shop-new.git | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
+      set :tag_name, tag_name
+    end
+
+    time_start = Time.now
+    set :time_start, time_start
+    puts "deploy starting at #{time_start} by #{local_user} for #{fetch :country_id} #{fetch :stage} at #{fetch :tag_name} (#{fetch :branch})"
+  end
+
+  namespace :notify do
+    desc 'notification tasks'
+
+    desc 'notify newrelic'
+    task :send_newrelic_message do
+        execute :"curl --silent --show-error --output /dev/null \
+          -H \"x-api-key:<%= @newrelic_api_key %>\" \
+          -d \"deployment[app_name]=#{country_domain_front}\" \
+          -d \"deployment[revision]=#{fetch :tag_name} (#{fetch :current_revision})\" \
+          -d \"deployment[description]=#{fetch :branch}\" \
+          -d \"deployment[user]=#{local_user}\" \
+          \"https://rpm.newrelic.com/deployments.xml\""
+    end
+  end
+
+  task :finish do
+    time_finish = Time.now
+    total_deploy_time = time_finish.to_i - fetch(:time_start).to_i
+    set :total_deploy_time, total_deploy_time
+
+    puts "deploy completed at #{time_finish} successfully by #{local_user} for #{fetch :country_id} #{fetch :stage} at #{fetch :tag_name} (#{fetch :current_revision}). The total time taken was #{total_deploy_time} seconds."
+    puts ""
+  end
+end
+
+before :deploy, 'foodpanda:start'
+
+namespace :deploy do
+  after :finishing, 'deploy:cleanup'             #clean up old releases
+
+  after :finishing, 'app_name:notify:send_newrelic_message'
+
+  task :failed do
+    invoke 'app_name:notify:send_skype_message_failed'
+
+    puts "deploy failed by #{local_user} for #{fetch :country_id} #{fetch :rails_env} #{fetch :tag_name} #{fetch :current_revision}"
+  end
+end
+
+#the last message on the console
+after :deploy, 'foodpanda:finish'
