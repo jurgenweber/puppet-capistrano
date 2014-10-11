@@ -10,6 +10,10 @@ define capistrano::config (
   $webserver_user,
   $scm,
   $repo_address,
+  $keep_releases = '3',
+  $linked_files  = [],
+  $linked_dirs   = [],
+  $copy_exclude  = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ]
 ) {
 
   if ! defined(Group[$deploy_user]) {

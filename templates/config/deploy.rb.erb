@@ -2,46 +2,50 @@
 #https://github.com/capistrano/capistrano
 
 #some tests to ensure we have everything correct
-abort("wrong user, needs to be www-data") if ENV['USER'] != 'www-data'
+abort("wrong user, needs to be <%= @deploy_user %>") if ENV['USER'] != '<%= @deploy_user %>'
 
 #variables:
 set :branch, ENV['branch'] || "master"
 set :log_level, ENV['loglevel'] || "info"
 
 # Deployment server info
-set :application, "#{fetch :country_id}_shop"
-set :deploy_to, "<%= @application_root_dir %>/#{fetch :stage}/#{fetch :country_id}"
-set :tmp_dir, "#{fetch :deploy_to}/shared/tmp"
+set :application, "<%= @<%= @app_name %> %>
+set :deploy_to, "<%= @app_path %>
+set :tmp_dir, "<%= @app_ath %>/shared/tmp"
 local_user = Etc.getlogin
-
-set :filter, roles: [:"#{fetch :country_id}_front", :"#{fetch :country_id}_cron"]
 
 # SCM info
 #custom hostname in ssh/config file to use another ssh key
-set :scm,         :git
-set :repo_url,    "github-shop-new:foodpanda/shop-new.git"
+set :scm,         :<%= @scm %>
+set :repo_url,    "<%= @repo_address %>"
 
 # General config stuff
-set :linked_files,      [ "app/config/parameters.yml" ] # This stops us from having to recreate the parameters file on every deploy.
-set :keep_releases, 3   #because of a bug with this feature just running it manulally, below in the deploy 'after' namespace
-set :linked_dirs,       [ "#{fetch :app_path}/logs", "#{fetch :web_path}/uploads", "bower_components", "vendor" ]
+set :keep_releases, <%= @keep_releases %>   #because of a bug with this feature just running it manulally, below in the deploy 'after' namespace
+<% if @linked_files != [] -%>
+set :linked_files,      [ <% @linked_files.each do |file| -%>"<%= file %>",<% end -%> ] 
+<% end -%>
+<% if @linked_dirs != [] -%>
+set :linked_dirs,       [ "<% @linked_dirs.each do |dir| -%>"<%= dir %>",<% end -%> ]
+<% end -%>
 set :permission_method, :acl
 
 # Confirmations will not be requested from the command line.
 set :interactive_mode, false
-set :copy_exclude, [".git/*", ".svn/*", ".DS_Store", ".gitignore"]
+<% if @copy_exclude != [] -%>
+set :copy_exclude, [ "<% @copy_exclude.each do |path| -%>"<%= path %>",<% end -%> ]
+<% end -%>
 
 # User details for the production server
 set :use_sudo, false
 set :ssh_options, {
   forward_agent: true,
-  user: 'www-data'
+  user: '<%= @deploy_user %>'
 }
 
-namespace :app_name do
+namespace :<%= @app_name %> do
   task :start do
     run_locally do
-      tag_name = capture("git ls-remote github-shop-new:foodpanda/shop-new.git | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
+      tag_name = capture("git ls-remote <%= @repo_address %> | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
       set :tag_name, tag_name
     end
 
@@ -57,7 +61,7 @@ namespace :app_name do
     task :send_newrelic_message do
         execute :"curl --silent --show-error --output /dev/null \
           -H \"x-api-key:<%= @newrelic_api_key %>\" \
-          -d \"deployment[app_name]=#{country_domain_front}\" \
+          -d \"deployment[<%= @app_name %>]=#{country_domain_front}\" \
           -d \"deployment[revision]=#{fetch :tag_name} (#{fetch :current_revision})\" \
           -d \"deployment[description]=#{fetch :branch}\" \
           -d \"deployment[user]=#{local_user}\" \
@@ -75,19 +79,19 @@ namespace :app_name do
   end
 end
 
-before :deploy, 'foodpanda:start'
+before :deploy, '<%= @app_name %>:start'
 
 namespace :deploy do
   after :finishing, 'deploy:cleanup'             #clean up old releases
 
-  after :finishing, 'app_name:notify:send_newrelic_message'
+  after :finishing, '<%= @app_name %>:notify:send_newrelic_message'
 
   task :failed do
-    invoke 'app_name:notify:send_skype_message_failed'
+    invoke '<%= @app_name %>:notify:send_skype_message_failed'
 
     puts "deploy failed by #{local_user} for #{fetch :country_id} #{fetch :rails_env} #{fetch :tag_name} #{fetch :current_revision}"
   end
 end
 
 #the last message on the console
-after :deploy, 'foodpanda:finish'
+after :deploy, '<%= @app_name %>:finish'
