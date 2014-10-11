@@ -2,9 +2,47 @@
 # cap config
 #
 define capistrano::config (
-  $environment = $name,
+  $environment,
+  $app_name,
+  $deploy_path,
+  $app_path,
+  $deploy_user,
+  $webserver_user,
+  $scm,
+  $repo_address,
 ) {
 
+  if ! defined(Group[$deploy_user]) {
+    group { $deploy_user:
+      gid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
+    }->
+    user { $deploy_user:
+      uid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
+      gid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
+    }
+  }
+
+  #Capfile
+  if ! defined(File["${deploy_path}/Capfile"]) {
+    file { "${deploy_path}/Capfile":
+      ensure  => file,
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      content => tempalte("${module_name}/Capfile.erb"),
+    }  
+  }
+
+  #capistarno deploy.rb
+  if ! defined(File["${deploy_path}/deploy/deploy.rb"]) {
+    file { "${deploy_path}/deploy/deploy.rb":
+      ensure  => file,
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      content => tempalte("${module_name}/config/deploy.rb.erb"),
+    }
+  }
+
+  #server declartions
   concat { "/data/srv/config/deploy/${environment}.rb":
     ensure => present,
   }
