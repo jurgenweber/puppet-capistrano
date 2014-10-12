@@ -22,6 +22,7 @@ define capistrano::config (
       gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
     }->
     user { $deploy_user:
+      shell   => '/bin/bash',
       uid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
       gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
     }
