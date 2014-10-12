@@ -19,12 +19,12 @@ define capistrano::config (
 
   if ! defined(Group[$deploy_user]) {
     group { $deploy_user:
-      gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
+      gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
     }->
     user { $deploy_user:
       shell   => '/bin/bash',
-      uid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
-      gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
+      uid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
+      gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
     }
   }
 
