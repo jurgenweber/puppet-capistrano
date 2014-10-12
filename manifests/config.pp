@@ -2,7 +2,7 @@
 # cap config
 #
 define capistrano::config (
-  $environment,
+  $environment   = $name,
   $app_name,
   $deploy_path,
   $app_path,
@@ -10,6 +10,7 @@ define capistrano::config (
   $app_user,
   $scm,
   $repo_address,
+  $cap_gems      = [],
   $keep_releases = '3',
   $linked_files  = [],
   $linked_dirs   = [],
@@ -18,11 +19,11 @@ define capistrano::config (
 
   if ! defined(Group[$deploy_user]) {
     group { $deploy_user:
-      gid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
+      gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
     }->
     user { $deploy_user:
-      uid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
-      gid     => fqdn_rand(50000, $app_name) + 5000    #ensure always over 1000
+      uid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
+      gid     => fqdn_rand(50000, $app_name) + 5000,    #ensure always over 1000
     }
   }
 
@@ -32,7 +33,7 @@ define capistrano::config (
       ensure  => file,
       owner   => $deploy_user,
       group   => $deploy_user,
-      content => tempalte("${module_name}/Capfile.erb"),
+      content => template("${module_name}/Capfile.erb"),
     }  
   }
 
@@ -42,7 +43,7 @@ define capistrano::config (
       ensure  => file,
       owner   => $deploy_user,
       group   => $deploy_user,
-      content => tempalte("${module_name}/config/deploy.rb.erb"),
+      content => template("${module_name}/config/deploy.rb.erb"),
     }
   }
 
