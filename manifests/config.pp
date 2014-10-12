@@ -30,7 +30,7 @@ define capistrano::config (
 
   #directory setup
   ensure_resource('exec', "setup_deploy_path_${app_name}", {
-    command => "mkdir -p ${deploy_path}/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
+    command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
     creates => $deploy_path,
     path    => '/bin',
   })
@@ -45,7 +45,7 @@ define capistrano::config (
   }) 
 
   #capistarno deploy.rb
-  ensure_resource('file', "${deploy_path}/deploy/deploy.rb", {
+  ensure_resource('file', "${deploy_path}/config/deploy.rb", {
     ensure  => file,
     owner   => $deploy_user,
     group   => $deploy_user,
