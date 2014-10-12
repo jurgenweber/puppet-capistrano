@@ -14,7 +14,7 @@ define capistrano::node (
   $app_name,                               #the name of the application
   $deploy_path  = "/deploy/${app_name}",   #the path that you go to, to run the deploy scripts
 ) {
-  @@concat::fragment { "${environment}_multistage_servers":
+  @@concat::fragment { "${environment}_multistage_servers_${app_name}":
     target  => "${deploy_path}/deploy/${environment}.rb",
     content => template("${module_name}/config/deploy/multistage_servers.rb.erb"),
     order   => '05',
