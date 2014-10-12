@@ -21,12 +21,12 @@ class capistrano (
 ) {
 
   #install me
-  class { 'install': 
+  class { 'capistrano::install': 
     scm            => $scm,
   }
 
   #setup the two environemnts
-  config { $environments:
+  capistrano::config { $environments:
     app_name       => $app_name,
     deploy_path    => $deploy_path,
     app_path       => $app_path,

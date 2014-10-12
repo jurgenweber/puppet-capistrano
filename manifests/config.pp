@@ -27,25 +27,29 @@ define capistrano::config (
     }
   }
 
+  #directory setup
+  ensure_resource('exec', "setup_deploy_path_${app_name}", {
+    command => "mkdir -p ${deploy_path}/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
+    creates => $deploy_path,
+    path    => '/bin',
+  })
+
   #Capfile
-  if ! defined(File["${deploy_path}/Capfile"]) {
-    file { "${deploy_path}/Capfile":
-      ensure  => file,
-      owner   => $deploy_user,
-      group   => $deploy_user,
-      content => template("${module_name}/Capfile.erb"),
-    }  
-  }
+  ensure_resource('file', "${deploy_path}/Capfile", {
+    ensure  => file,
+    owner   => $deploy_user,
+    group   => $deploy_user,
+    content => template("${module_name}/Capfile.erb"),
+    require => Exec["setup_deploy_path_${app_name}"],
+  }) 
 
   #capistarno deploy.rb
-  if ! defined(File["${deploy_path}/deploy/deploy.rb"]) {
-    file { "${deploy_path}/deploy/deploy.rb":
-      ensure  => file,
-      owner   => $deploy_user,
-      group   => $deploy_user,
-      content => template("${module_name}/config/deploy.rb.erb"),
-    }
-  }
+  ensure_resource('file', "${deploy_path}/deploy/deploy.rb", {
+    ensure  => file,
+    owner   => $deploy_user,
+    group   => $deploy_user,
+    content => template("${module_name}/config/deploy.rb.erb"),
+  })
 
   #server declartions
   concat { "${deploy_path}/deploy/${environment}.rb":
