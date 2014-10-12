@@ -11,7 +11,7 @@ define capistrano::environments::config (
   $environment = $split_app_name_and_environment[1]
 
   #server declartions
-  concat { "${deploy_path}/deploy/${environment}.rb":
+  concat { "${deploy_path}/config/deploy/${environment}.rb":
     ensure => present,
   }
 
