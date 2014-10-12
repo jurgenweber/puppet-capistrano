@@ -4,16 +4,15 @@
 # production and staging are assumed
 #
 #
-#class { 'capistrano': 
-#  app_name      => 'puppet',
+#capistrano::cap { 'puppet':
 #  repo_address  => 'git@example.com:git_repo.git',
 #}
 #
-class capistrano (
-  $app_name        = 'my_app',                    #the name of the application
+define capistrano::cap (
+  $app_name        = $name,                       #the name of the application
   $environments    = [ 'production', 'staging' ],
-  $deploy_path     = "/deploy/${app_name}",       #the path that you go to, to run the deploy scripts
-  $app_path        = "/var/www/${app_name}",
+  $deploy_path     = "/deploy/${name}",       #the path that you go to, to run the deploy scripts
+  $app_path        = "/var/www/${name}",
   $deploy_user     = 'cap',
   $app_user        = 'www-data',                  #for example your webserver user
   $scm             = 'git',
@@ -21,13 +20,13 @@ class capistrano (
 ) {
 
   #install me
-  class { 'capistrano::install': 
+  capistrano::install { $app_name:
     scm            => $scm,
   }
 
   #setup the two environemnts
-  capistrano::config { $environments:
-    app_name       => $app_name,
+  capistrano::config { $app_name:
+    environments   => $environments,
     deploy_path    => $deploy_path,
     app_path       => $app_path,
     deploy_user    => $deploy_user,
@@ -38,8 +37,8 @@ class capistrano (
 
   #I assume the deploy host will not serve code but we will stil deploy here to
   #do 'stuff' that only one server can do.... like db migrations
-  capistrano::node { $environments: 
-    app_name       => $app_name,
+  capistrano::node { $app_name: 
+    environments   => $environments,
     primary_node   => true,
   }
 

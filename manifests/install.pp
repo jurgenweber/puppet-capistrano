@@ -1,7 +1,7 @@
 #
 # setup capifony and capistrano deploy env
 #
-class capistrano::install ( 
+define capistrano::install ( 
   $scm = 'git',
 ) {
 
@@ -11,14 +11,18 @@ class capistrano::install (
     }
   }
 
-  class { 'ruby': }->
-  package { 'capistrano':
+  ensure_resource('class', 'ruby', {})
+
+  ensure_resource('package', 'capistrano', {
     ensure   => '3.2.1',
     provider => gem,
-  }->
-  package { 'capistrano-file-permissions':
+    require  => Class['ruby'],
+  })
+
+  ensure_resource('package', 'capistrano-file-permissions', {
     ensure   => '0.1.0',
     provider => gem,
-  }
+    require  => Package['capistrano'],
+  })
 
 }

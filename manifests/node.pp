@@ -9,15 +9,17 @@
 # }
 #
 define capistrano::node (
-  $environment  = $name,
+  $environments,
   $primary_node = false,                   #am I the node that you run primary tasks from? you only need one (db migrations)
-  $app_name,                               #the name of the application
-  $deploy_path  = "/deploy/${app_name}",   #the path that you go to, to run the deploy scripts
+  $app_name     = $name,                    #the name of the application
+  $deploy_path  = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
 ) {
-  @@concat::fragment { "${environment}_multistage_servers_${app_name}":
-    target  => "${deploy_path}/deploy/${environment}.rb",
-    content => template("${module_name}/config/deploy/multistage_servers.rb.erb"),
-    order   => '05',
-    tag     => "${environment}_deploy_node_${app_name}",
+
+  $app_name_and_environment  = prefix($environments, "${app_name}_")
+
+  capistrano::environments::node { $app_name_and_environment:
+    primary_node => $primary_node,
+    deploy_path  => $deploy_path,
   }
+
 }

@@ -2,8 +2,8 @@
 # cap config
 #
 define capistrano::config (
-  $environment   = $name,
-  $app_name,
+  $app_name      = $name,
+  $environments,
   $deploy_path,
   $app_path,
   $deploy_user,
@@ -17,16 +17,16 @@ define capistrano::config (
   $copy_exclude  = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ]
 ) {
 
-  if ! defined(Group[$deploy_user]) {
-    group { $deploy_user:
-      gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-    }->
-    user { $deploy_user:
-      shell   => '/bin/bash',
-      uid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-      gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-    }
-  }
+  #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
+  ensure_resource('group', $deploy_user, {
+    gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
+  })
+  ensure_resource('user', $deploy_user, {
+    shell   => '/bin/bash',
+    uid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
+    gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
+    require => Group[$deploy_user],
+  })
 
   #directory setup
   ensure_resource('exec', "setup_deploy_path_${app_name}", {
@@ -52,18 +52,9 @@ define capistrano::config (
     content => template("${module_name}/config/deploy.rb.erb"),
   })
 
-  #server declartions
-  concat { "${deploy_path}/deploy/${environment}.rb":
-    ensure => present,
+  $app_name_and_environment  = prefix($environments, "${app_name}_")
+
+  capistrano::environments::config { $app_name_and_environment: 
+    deploy_path => $deploy_path,
   }
-
-  concat::fragment { "${environment}_multistage_server_header_${app_name}":
-    target  => "${deploy_path}/deploy/${environment}.rb",
-    content => template("${module_name}/config/deploy/multistage_header.rb.erb"),
-    order   => '02',
-  }
-
-  #esearch/db choosing using NON VPC crons_${country_id} fact
-  Concat::Fragment <<| tag == "${environment}_deploy_node_${app_name}" |>>
-
 }
