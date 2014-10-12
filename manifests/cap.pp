@@ -17,6 +17,7 @@ define capistrano::cap (
   $app_user        = 'www-data',                  #for example your webserver user
   $scm             = 'git',
   $repo_address,                                  #git@github.com/foo/bar.git
+  $create_ssh_key     = true,
 ) {
 
   #install me
@@ -33,6 +34,7 @@ define capistrano::cap (
     app_user       => $app_user,
     scm            => $scm,
     repo_address   => $repo_address,
+    create_ssh_key => $create_ssh_key,
   }
 
   #I assume the deploy host will not serve code but we will stil deploy here to

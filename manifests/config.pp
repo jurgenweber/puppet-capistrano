@@ -2,7 +2,7 @@
 # cap config
 #
 define capistrano::config (
-  $app_name      = $name,
+  $app_name           = $name,
   $environments,
   $deploy_path,
   $app_path,
@@ -10,11 +10,12 @@ define capistrano::config (
   $app_user,
   $scm,
   $repo_address,
-  $cap_gems      = [],
-  $keep_releases = '3',
-  $linked_files  = [],
-  $linked_dirs   = [],
-  $copy_exclude  = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ]
+  $cap_gems           = [],
+  $keep_releases      = '3',
+  $linked_files       = [],
+  $linked_dirs        = [],
+  $copy_exclude       = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
+  $create_ssh_key     = true,
 ) {
 
   #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
@@ -51,6 +52,15 @@ define capistrano::config (
     group   => $deploy_user,
     content => template("${module_name}/config/deploy.rb.erb"),
   })
+
+  #github/git needs ssh keys
+  if ($create_ssh_key) {
+    openssh::key { $app_name:
+      username       => $deploy_user,
+      dir            => $deploy_path,
+      require        => Class['profile_puppet'],
+    }
+  }
 
   $app_name_and_environment  = prefix($environments, "${app_name}_")
 
