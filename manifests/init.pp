@@ -6,7 +6,7 @@
 #
 #class { 'capistrano': 
 #  app_name      => 'puppet',
-#  repo_address  => 'git@warvm-mail01.space-marine.org:puppet.git',
+#  repo_address  => 'git@example.com:git_repo.git',
 #}
 #
 class capistrano (
@@ -33,7 +33,7 @@ class capistrano (
     repo_address   => $repo_address,
   }
 
-  #I assume the deploy host will not server code but we will stil ldeploy here to
+  #I assume the deploy host will not serve code but we will stil deploy here to
   #do 'stuff' that only one server can do.... like db migrations
   node { [ 'production', 'staging' ]: 
     primary_node => true,
