@@ -25,14 +25,14 @@ set :keep_releases, <%= @keep_releases %>   #because of a bug with this feature 
 set :linked_files,      [ <% @linked_files.each do |file| -%>"<%= file %>",<% end -%> ] 
 <% end -%>
 <% if @linked_dirs != [] -%>
-set :linked_dirs,       [ "<% @linked_dirs.each do |dir| -%>"<%= dir %>",<% end -%> ]
+set :linked_dirs,       [ <% @linked_dirs.each do |dir| -%>"<%= dir %>",<% end -%> ]
 <% end -%>
 set :permission_method, :acl
 
 # Confirmations will not be requested from the command line.
 set :interactive_mode, false
 <% if @copy_exclude != [] -%>
-set :copy_exclude, [ "<% @copy_exclude.each do |path| -%>"<%= path %>",<% end -%> ]
+set :copy_exclude, [ <% @copy_exclude.each do |path| -%>"<%= path %>",<% end -%> ]
 <% end -%>
 
 # User details for the production server
