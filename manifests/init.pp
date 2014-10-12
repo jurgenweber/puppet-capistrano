@@ -38,9 +38,9 @@ class capistrano (
 
   #I assume the deploy host will not serve code but we will stil deploy here to
   #do 'stuff' that only one server can do.... like db migrations
-  #node { $environments: 
-    #app_name       => $app_name,
-    #primary_node   => true,
-  #}
+  capistrano::node { $environments: 
+    app_name       => $app_name,
+    primary_node   => true,
+  }
 
 }
