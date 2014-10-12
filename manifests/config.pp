@@ -7,7 +7,7 @@ define capistrano::config (
   $deploy_path,
   $app_path,
   $deploy_user,
-  $webserver_user,
+  $app_user,
   $scm,
   $repo_address,
   $keep_releases = '3',
@@ -47,17 +47,17 @@ define capistrano::config (
   }
 
   #server declartions
-  concat { "/data/srv/config/deploy/${environment}.rb":
+  concat { "${deploy_path}/deploy/${environment}.rb":
     ensure => present,
   }
 
   concat::fragment { "${environment}_multistage_server_header":
-    target  => "/data/srv/config/deploy/${environment}.rb",
+    target  => "${deploy_path}/deploy/${environment}.rb",
     content => template("${module_name}/config/deploy/multistage_header.rb.erb"),
     order   => '02',
   }
 
   #esearch/db choosing using NON VPC crons_${country_id} fact
-  Concat::Fragment <<| tag == "${environment}_deploy_node" |>>
+  Concat::Fragment <<| tag == "${environment}_deploy_node_${app_name}" |>>
 
 }
