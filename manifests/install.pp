@@ -1,7 +1,15 @@
 #
 # setup capifony and capistrano deploy env
 #
-class capistrano::install {
+class capistrano::install ( 
+  $scm = 'git',
+) {
+
+  case $scm {
+    'git': {
+      ensure_resource('class', 'git', {})
+    }
+  }
 
   class { 'ruby': }->
   package { 'capistrano':
