@@ -3,6 +3,7 @@
 #
 define capistrano::environments::config (
   $deploy_path,
+  $deploy_user,
 ) {
 
   $split_app_name_and_environment = split($name, '_')
@@ -13,6 +14,8 @@ define capistrano::environments::config (
   #server declartions
   concat { "${deploy_path}/config/deploy/${environment}.rb":
     ensure => present,
+    owner  => $deploy_user,
+    group  => $deploy_user,
   }
 
   concat::fragment { "${environment}_multistage_server_header_${app_name}":

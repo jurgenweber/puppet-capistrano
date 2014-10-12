@@ -56,5 +56,6 @@ define capistrano::config (
 
   capistrano::environments::config { $app_name_and_environment: 
     deploy_path => $deploy_path,
+    deploy_user => $deploy_user,
   }
 }
