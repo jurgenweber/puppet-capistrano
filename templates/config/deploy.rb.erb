@@ -10,7 +10,7 @@ set :log_level, ENV['loglevel'] || "info"
 
 # Deployment server info
 set :application, "<%= @app_name %>"
-set :deploy_to, "<%= @app_path %>"
+set :deploy_to, "<%= @app_path %>/#{fetch :stage}"
 set :tmp_dir, "<%= @app_path %>/shared/tmp"
 local_user = Etc.getlogin
 
