@@ -43,8 +43,31 @@ The very basic steps needed for a user to get the module up and running.
 If your most recent release breaks compatibility or requires particular steps for upgrading, you may wish to include an additional section here: Upgrading (For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
 
 ##Usage
+On a primary or 'main' server you will have:
+```
+  capistrano::cap { 'foo_repo':
+    repo_address   => 'github.com',        #we assume the GIT url is git@hostname:$name.git
+    app_path       => '/opt/puppet',       #where you want to deploy to
+    git_keys       => true,
+    ssh_key_source => 'puppet:///modules/applicatoin',   
+  }
+```
 
-Put the classes, types, and resources for customizing, configuring, and doing the fancy stuff with your module here. 
+On any nodes you need to 'deploy to':
+```
+  capistrano::node { 'foo_repo':
+    environments   => [ 'production', 'staging' ],    #capistrano stages
+    app_path       => '/opt/puppet',
+    ssh_key_source => 'puppet:///modules/applicatoin',   
+  }
+```
+
+I assume a lot as it is a work in progress. You should be able to feed it keys as a file source definition and it will use those keys with github. Once deploy you will have
+
+```
+cd /deploy/foo_repo
+cap production deploy
+```
 
 ##Reference
 

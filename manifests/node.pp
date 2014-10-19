@@ -4,9 +4,11 @@
 # [primary_node]
 # where db migrations are run from, you should only have one.
 #
-# capistrano::node { 'production', 'staging': }
-#   app_name => 'my_app',                  #needs to be the same as previously stated
-# }
+#  capistrano::node { 'foo_repo':
+#    environments   => [ 'production', 'staging' ],
+#    app_path       => '/opt/puppet',
+#    ssh_key_source => 'puppet:///modules/applicatoin',
+#  }
 #
 define capistrano::node (
   $environments,
