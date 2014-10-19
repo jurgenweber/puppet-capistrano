@@ -24,7 +24,14 @@ define capistrano::environments::config (
     order   => '02',
   }
 
+  $app_name_slash_check = split($app_name, '/')
+  if ($app_name_slash_check[1] == '') {
+    $app_name_tag  = $app_name_slash_check
+  } else {
+    $app_name_tag  = concat([ $app_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
+  }
+
   #esearch/db choosing using NON VPC crons_${country_id} fact
-  Concat::Fragment <<| tag == "${environment}_deploy_node_${app_name}" |>>
+  Concat::Fragment <<| tag == "${environment}_deploy_node_${app_name_tag}" |>>
 
 }
