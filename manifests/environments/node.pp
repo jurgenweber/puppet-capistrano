@@ -15,7 +15,7 @@ define capistrano::environments::node (
   if ($app_name_slash_check[1] == '') {
     $app_name_tag  = $app_name_slash_check
   } else {
-    $app_name_tag  = concat([ $ap[_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
+    $app_name_tag  = concat([ $app_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
   }
 
   @@concat::fragment { "${environment}_multistage_servers_${app_name}":
