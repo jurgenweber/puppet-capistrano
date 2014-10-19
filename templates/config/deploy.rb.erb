@@ -59,13 +59,13 @@ namespace :<%= @app_name %> do
 
     desc 'notify newrelic'
     task :send_newrelic_message do
-        execute :"curl --silent --show-error --output /dev/null \
-          -H \"x-api-key:<%= @newrelic_api_key %>\" \
-          -d \"deployment[<%= @app_name %>]=#{country_domain_front}\" \
-          -d \"deployment[revision]=#{fetch :tag_name} (#{fetch :current_revision})\" \
-          -d \"deployment[description]=#{fetch :branch}\" \
-          -d \"deployment[user]=#{local_user}\" \
-          \"https://rpm.newrelic.com/deployments.xml\""
+        #execute :"curl --silent --show-error --output /dev/null \
+        #  -H \"x-api-key:<%= @newrelic_api_key %>\" \
+        #  -d \"deployment[<%= @app_name %>]=#{country_domain_front}\" \
+        #  -d \"deployment[revision]=#{fetch :tag_name} (#{fetch :current_revision})\" \
+        #  -d \"deployment[description]=#{fetch :branch}\" \
+        #  -d \"deployment[user]=#{local_user}\" \
+        #  \"https://rpm.newrelic.com/deployments.xml\""
     end
   end
 
