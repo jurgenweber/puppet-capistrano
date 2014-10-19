@@ -1,4 +1,4 @@
-#modulename
+#puppet-capistrano
 
 ####Table of Contents
 
@@ -15,27 +15,28 @@
 
 ##Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves. This is your 30 second elevator pitch for your module. Consider including OS/Puppet version it works with.       
+auto deploy and setup for capistrano (http://capistranorb.com).
+
+Setup and use on Ubuntu 14.04LTS and puppet 3.7.1.
 
 ##Module Description
 
-If applicable, this section should have a brief description of the technology the module integrates with and what that integration enables. This section should answer the questions: "What does this module *do*?" and "Why would I use it?"
-    
-If your module has a range of functionality (installation, configuration, management, etc.) this is the time to mention it.
+This module is in two parts, a primary server installation and node. It will auto detect your hosts for capistrano and let you deploy your code to them. Right now only tested/working with git. You can get it to deploy ssh keys for git as well.
+
+It supports production and staging environments from capistrano.
 
 ##Setup
 
-###What [Modulename] affects
+###What [puppet-capistrano] affects
 
-* A list of files, packages, services, or operations that the module will alter, impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form. 
+* It should not touch anything import on your system but add some fodlers and directories to capistrano can work.
 
-###Setup Requirements **OPTIONAL**
+###Setup Requirements 
 
-If your module requires anything extra before setting up (pluginsync enabled, etc.), mention it here. 
+* puppetlabs-stdlib
+* .....
 	
-###Beginning with [Modulename]	
+###Beginning with [puppet-capistrano]	
 
 The very basic steps needed for a user to get the module up and running. 
 
