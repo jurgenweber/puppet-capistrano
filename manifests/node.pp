@@ -56,6 +56,11 @@ define capistrano::node (
     creates => $deploy_path,
     path    => '/bin',
   })
+  ensure_resource('exec', "setup_app_path_${app_name}", {
+    command => "mkdir -p ${app_path}/config/app && chown -R ${app_user}:${app_user} ${app_path}",
+    creates => $app_path,
+    path    => '/bin',
+  })
 
   #ssh key for sshing between nodes for capistrano
   ensure_resource('file', "${home_path}/.ssh", {
