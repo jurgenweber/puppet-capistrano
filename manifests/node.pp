@@ -12,8 +12,10 @@ define capistrano::node (
   $environments,
   $primary_node       = false,                   #am I the node that you run primary tasks from? you only need one (db migrations)
   $app_name           = $name,                    #the name of the application
-  $deploy_path        = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
   $deploy_user        = 'cap',
+  $deploy_path        = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
+  $app_user           = 'www-data',
+  $app_path           = "/var/www/${name}",
   $cap_ssh_privatekey = false,
   $ssh_key_source     = undef,
 ) {
@@ -26,6 +28,13 @@ define capistrano::node (
   }
 
   $home_path = dirname($deploy_path)
+
+  ensure_resource('file', $app_path, {
+    ensure   => directory,
+    owner    => $app_user,
+    group    => $deploy_user,
+    mode     => 770,
+  })
 
   #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
   ensure_resource('group', $deploy_user, {

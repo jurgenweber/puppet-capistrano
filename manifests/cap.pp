@@ -11,10 +11,10 @@
 define capistrano::cap (
   $app_name        = $name,                       #the name of the application
   $environments    = [ 'production', 'staging' ],
-  $deploy_path     = "/deploy/${name}",       #the path that you go to, to run the deploy scripts
-  $app_path        = "/var/www/${name}",
   $deploy_user     = 'cap',
+  $deploy_path     = "/deploy/${name}",       #the path that you go to, to run the deploy scripts
   $app_user        = 'www-data',                  #for example your webserver user
+  $app_path        = "/var/www/${name}",
   $scm             = 'git',
   $repo_address,                                  #github.com:/foo/
   $ssh_key_source  = undef,
@@ -45,6 +45,8 @@ define capistrano::cap (
     environments       => $environments,
     deploy_user        => $deploy_user,
     deploy_path        => $deploy_path,
+    app_user           => $app_user,
+    app_path           => $app_path,
     primary_node       => true,
     cap_ssh_privatekey => true,
     ssh_key_source     => $ssh_key_source,
