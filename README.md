@@ -36,6 +36,7 @@ It supports production and staging environments from capistrano.
 * puppetlabs-stdlib
 * puppetlabs-ruby
 * example42-git
+* example42-puppi
 * .....
 	
 ###Beginning with [puppet-capistrano]	
