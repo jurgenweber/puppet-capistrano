@@ -18,6 +18,7 @@ define capistrano::cap (
   $scm             = 'git',
   $repo_address,                                  #github.com:/foo/
   $ssh_key_source  = undef,
+  $git_keys        = false,                       #are you supplying git keys?
 ) {
 
   #install me
@@ -27,21 +28,26 @@ define capistrano::cap (
 
   #setup the two environemnts
   capistrano::config { $app_name:
-    environments   => $environments,
-    deploy_path    => $deploy_path,
-    app_path       => $app_path,
-    deploy_user    => $deploy_user,
-    app_user       => $app_user,
-    scm            => $scm,
-    repo_address   => $repo_address,
-    ssh_key_source => $ssh_key_source,
+    environments       => $environments,
+    deploy_path        => $deploy_path,
+    app_path           => $app_path,
+    deploy_user        => $deploy_user,
+    app_user           => $app_user,
+    scm                => $scm,
+    repo_address       => $repo_address,
+    ssh_key_source     => $ssh_key_source,
+    git_keys           => $git_keys,
   }
 
   #I assume the deploy host will not serve code but we will stil deploy here to
   #do 'stuff' that only one server can do.... like db migrations
   capistrano::node { $app_name: 
-    environments   => $environments,
-    primary_node   => true,
+    environments       => $environments,
+    deploy_user        => $deploy_user,
+    deploy_path        => $deploy_path,
+    primary_node       => true,
+    cap_ssh_privatekey => true,
+    ssh_key_source     => $ssh_key_source,
   }
 
 }

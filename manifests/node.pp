@@ -10,9 +10,12 @@
 #
 define capistrano::node (
   $environments,
-  $primary_node = false,                   #am I the node that you run primary tasks from? you only need one (db migrations)
-  $app_name     = $name,                    #the name of the application
-  $deploy_path  = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
+  $primary_node       = false,                   #am I the node that you run primary tasks from? you only need one (db migrations)
+  $app_name           = $name,                    #the name of the application
+  $deploy_path        = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
+  $deploy_user        = 'cap',
+  $cap_ssh_privatekey = false,
+  $ssh_key_source     = undef,
 ) {
 
   $app_name_and_environment  = prefix($environments, "${app_name}_")
@@ -22,4 +25,51 @@ define capistrano::node (
     deploy_path  => $deploy_path,
   }
 
+  $home_path = dirname($deploy_path)
+
+  #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
+  ensure_resource('group', $deploy_user, {
+    gid     => fqdn_rand(50000, $::deploy_user) + 5000,    #ensure always over 1000
+  })
+  ensure_resource('user', $deploy_user, {
+    shell   => '/bin/bash',
+    uid     => fqdn_rand(50000, $::deploy_user) + 5000,    #ensure always over 1000
+    gid     => fqdn_rand(50000, $::deploy_user) + 5000,    #ensure always over 1000
+    home    => $home_path,
+    require => Group[$deploy_user],
+  })
+
+  #directory setup
+  ensure_resource('exec', "setup_deploy_path_${app_name}", {
+    command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
+    creates => $deploy_path,
+    path    => '/bin',
+  })
+
+  #ssh key for sshing between nodes for capistrano
+  ensure_resource('file', "${home_path}/.ssh", {
+    ensure => directory,
+    owner  => $deploy_user,
+    group  => $deploy_user,
+  })
+  ensure_resource('concat', "${home_path}/.ssh/config", {
+    ensure => present,
+  })
+  if ($cap_ssh_privatekey == true) {
+    $priv_key_ensure = file
+  } else {
+    $priv_key_ensure = absent
+  }
+  ensure_resource('file', "${home_path}/.ssh/id_rsa", {
+    ensure => $priv_key_ensure,
+    source => "${ssh_key_source}/id_rsa",
+    owner  => $deploy_user,
+    group  => $deploy_user,
+  })
+  ensure_resource('file', "${home_path}/.ssh/authorized_keys", {
+    ensure => file,
+    source => "${ssh_key_source}/id_rsa.pub",
+    owner  => $deploy_user,
+    group  => $deploy_user,
+  })
 }

@@ -16,28 +16,8 @@ define capistrano::config (
   $linked_dirs        = [],
   $copy_exclude       = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
   $ssh_key_source     = undef,    #you need to create files to server to use this for github
+  $git_keys           = false,    #are you supplying git repo keys at the same ssh key source?
 ) {
-
-  $home_path = dirname($deploy_path)
-  
-  #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
-  ensure_resource('group', $deploy_user, {
-    gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-  })
-  ensure_resource('user', $deploy_user, {
-    shell   => '/bin/bash',
-    uid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-    gid     => fqdn_rand(50000, $::fqdn) + 5000,    #ensure always over 1000
-    home    => $home_path,
-    require => Group[$deploy_user],
-  })
-
-  #directory setup
-  ensure_resource('exec', "setup_deploy_path_${app_name}", {
-    command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
-    creates => $deploy_path,
-    path    => '/bin',
-  })
 
   #Capfile
   ensure_resource('file', "${deploy_path}/Capfile", {
@@ -56,13 +36,14 @@ define capistrano::config (
     content => template("${module_name}/config/deploy.rb.erb"),
   })
 
+  $home_path = dirname($deploy_path)
+
+  ensure_resource('concat', "${home_path}/.ssh/config", {
+    ensure => present,
+  })
+
   #github/git needs ssh keys
-  if ($ssh_key_source != undef) {
-    ensure_resource('file', "${home_path}/.ssh", {
-      ensure => directory,
-      owner  => $deploy_user,
-      group  => $deploy_user,
-    })
+  if ($ssh_key_source != undef) and ($git_keys == true) {
     file { "${deploy_path}/id_rsa":
       ensure => file,
       source => "${ssh_key_source}/${app_name}_id_rsa",
@@ -75,9 +56,6 @@ define capistrano::config (
       owner  => $deploy_user,
       group  => $deploy_user,
     }
-    ensure_resource('concat', "${home_path}/.ssh/config", {
-      ensure => present,
-    })
     concat::fragment { "${app_name}_hostname":
       target  => "${home_path}/.ssh/config",
       content => template("${module_name}/ssh_config.erb"),
