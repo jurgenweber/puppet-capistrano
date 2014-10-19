@@ -1,0 +1,7 @@
+
+Host <%= @app_name %>_<%= @repo_address %>
+  HostName      <%= @repo_address %>
+  IdentityFile  <%= @deploy_path %>/id_rsa
+  StrictHostKeyChecking no
+  user git
+

@@ -17,7 +17,7 @@ local_user = Etc.getlogin
 # SCM info
 #custom hostname in ssh/config file to use another ssh key
 set :scm,         :<%= @scm %>
-set :repo_url,    "<%= @repo_address %>"
+set :repo_url,    "git@<%= @app_name %>_<%= @repo_address %>:<%= @app_name %>.git"
 
 # General config stuff
 set :keep_releases, <%= @keep_releases %>   #because of a bug with this feature just running it manulally, below in the deploy 'after' namespace
@@ -45,7 +45,7 @@ set :ssh_options, {
 namespace :<%= @app_name %> do
   task :start do
     run_locally do
-      tag_name = capture("git ls-remote <%= @repo_address %> | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
+      tag_name = capture("git ls-remote #{fetch :repo_url} | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
       set :tag_name, tag_name
     end
 
