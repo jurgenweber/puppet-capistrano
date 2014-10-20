@@ -42,7 +42,7 @@ set :ssh_options, {
   user: '<%= @deploy_user %>'
 }
 
-namespace :<%= @app_name %> do
+namespace :"<%= @app_name %>" do
   task :start do
     run_locally do
       tag_name = capture("git ls-remote #{fetch :repo_url} | grep #{fetch :branch} | grep -v HEAD | rev | cut -d '/' -f1 | rev")
