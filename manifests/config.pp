@@ -40,6 +40,7 @@ define capistrano::config (
 
   ensure_resource('concat', "${home_path}/.ssh/config", {
     ensure => present,
+    mode   => '644',
   })
 
   #github/git needs ssh keys
@@ -49,12 +50,14 @@ define capistrano::config (
       source => "${ssh_key_source}/${app_name}_id_rsa",
       owner  => $deploy_user,
       group  => $deploy_user,
+      mode   => '400',
     }->
     file { "${deploy_path}/id_rsa.pub":
       ensure => file,
       source => "${ssh_key_source}/${app_name}_id_rsa.pub",
       owner  => $deploy_user,
       group  => $deploy_user,
+      mode   => '400',
     }
     concat::fragment { "${app_name}_hostname":
       target  => "${home_path}/.ssh/config",

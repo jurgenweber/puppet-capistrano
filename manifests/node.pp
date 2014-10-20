@@ -70,6 +70,7 @@ define capistrano::node (
   })
   ensure_resource('concat', "${home_path}/.ssh/config", {
     ensure => present,
+    mode   => '644',
   })
   if ($cap_ssh_privatekey == true) {
     $priv_key_ensure = file
@@ -81,11 +82,13 @@ define capistrano::node (
     source => "${ssh_key_source}/id_rsa",
     owner  => $deploy_user,
     group  => $deploy_user,
+    mode   => '400',
   })
   ensure_resource('file', "${home_path}/.ssh/authorized_keys", {
     ensure => file,
     source => "${ssh_key_source}/id_rsa.pub",
     owner  => $deploy_user,
     group  => $deploy_user,
+    mode   => '400',
   })
 }
