@@ -18,6 +18,12 @@ define capistrano::environments::node (
     $app_name_tag  = concat([ $app_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
   }
 
+  if ($primary_node == true) {
+    $server_role = 'primary_node'
+  } else {
+    $server_role = 'node'
+  }
+
   @@concat::fragment { "${environment}_multistage_servers_${app_name}":
     target  => "${deploy_path}/config/deploy/${environment}.rb",
     content => template("${module_name}/config/deploy/multistage_servers.rb.erb"),
