@@ -11,6 +11,7 @@ define capistrano::environments::node (
   $app_name    = $split_app_name_and_environment[0]
   $environment = $split_app_name_and_environment[1]
 
+  #deal wiht git repo's with company/repo.name.
   $app_name_slash_check = split($app_name, '/')
   if ($app_name_slash_check[1] == '') {
     $app_name_tag  = $app_name_slash_check
