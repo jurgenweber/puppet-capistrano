@@ -28,6 +28,14 @@ define capistrano::config (
     require => Exec["setup_deploy_path_${app_name}"],
   }) 
 
+  #deal wiht git repo's with company/repo.name.
+  $app_name_slash_check = split($app_name, '/')
+  if ($app_name_slash_check[1] == '') {
+    $app_name_tag  = $app_name_slash_check
+  } else {
+    $app_name_tag  = concat([ $app_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
+  }
+
   #capistarno deploy.rb
   ensure_resource('file', "${deploy_path}/config/deploy.rb", {
     ensure  => file,

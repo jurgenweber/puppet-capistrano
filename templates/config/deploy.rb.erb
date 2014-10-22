@@ -17,7 +17,7 @@ local_user = Etc.getlogin
 # SCM info
 #custom hostname in ssh/config file to use another ssh key
 set :scm,         :<%= @scm %>
-set :repo_url,    "git@<%= @app_name %>_<%= @repo_address %>:<%= @app_name %>.git"
+set :repo_url,    "git@<%= @app_name_tag %>_<%= @repo_address %>:<%= @app_name %>.git"
 
 # General config stuff
 set :keep_releases, <%= @keep_releases %>   #because of a bug with this feature just running it manulally, below in the deploy 'after' namespace
