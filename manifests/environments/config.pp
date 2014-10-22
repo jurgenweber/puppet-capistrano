@@ -28,7 +28,7 @@ define capistrano::environments::config (
   if ($app_name_slash_check[1] == '') {
     $app_name_tag  = $app_name_slash_check
   } else {
-    $app_name_tag  = concat([ $app_name_slash_check[0] ], [ "_${app_name_slash_check[1]}" ])
+    $app_name_tag  = join(concat([ $app_name_slash_check[0] ], [ "${app_name_slash_check[1]}" ]), '_')
   }
 
   #esearch/db choosing using NON VPC crons_${country_id} fact
