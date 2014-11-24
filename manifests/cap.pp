@@ -17,6 +17,11 @@ define capistrano::cap (
   $app_path        = "/var/www/${name}",
   $scm             = 'git',
   $repo_address,                                  #github.com:/foo/
+  $cap_gems        = [],
+  $keep_releases   = '3',
+  $linked_files    = [],
+  $linked_dirs     = [],
+  $copy_exclude    = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
   $ssh_key_source  = undef,
   $git_keys        = false,                       #are you supplying git keys?
 ) {
@@ -35,6 +40,11 @@ define capistrano::cap (
     app_user           => $app_user,
     scm                => $scm,
     repo_address       => $repo_address,
+    cap_gems           => [],
+    keep_releases      => '3',
+    linked_files       => [],
+    linked_dirs        => [],
+    copy_exclude       => [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
     ssh_key_source     => $ssh_key_source,
     git_keys           => $git_keys,
   }
