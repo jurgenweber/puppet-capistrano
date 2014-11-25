@@ -9,21 +9,22 @@
 #}
 #
 define capistrano::cap (
-  $app_name        = $name,                       #the name of the application
-  $environments    = [ 'production', 'staging' ],
-  $deploy_user     = 'cap',
-  $deploy_path     = "/deploy/${name}",       #the path that you go to, to run the deploy scripts
-  $app_user        = 'www-data',                  #for example your webserver user
-  $app_path        = "/var/www/${name}",
-  $scm             = 'git',
-  $repo_address,                                  #github.com:/foo/
-  $cap_gems        = [],
-  $keep_releases   = '3',
-  $linked_files    = [],
-  $linked_dirs     = [],
-  $copy_exclude    = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
-  $ssh_key_source  = undef,
-  $git_keys        = false,                       #are you supplying git keys?
+  $app_name           = $name,                       #the name of the application
+  $environments       = [ 'production', 'staging' ],
+  $deploy_user        = 'cap',
+  $deploy_path        = "/deploy/${name}",       #the path that you go to, to run the deploy scripts
+  $app_user           = 'www-data',                  #for example your webserver user
+  $app_path           = "/var/www/${name}",
+  $scm                = 'git',
+  $repo_address,                                     #github.com:/foo/
+  $cap_gems           = [],
+  $keep_releases      = '3',
+  $linked_files       = [],
+  $linked_dirs        = [],
+  $copy_exclude       = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
+  $ssh_key_source     = undef,
+  $git_keys           = false,                       #are you supplying git keys?
+  $deploy_rb_tmp_src  = "${module_name}/config/deploy.rb.erb",
 ) {
 
   #install me

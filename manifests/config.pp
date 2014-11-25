@@ -17,6 +17,7 @@ define capistrano::config (
   $copy_exclude       = [ '.git/*', '.svn/*', '.DS_Store', '.gitignore' ],
   $ssh_key_source     = undef,    #you need to create files to server to use this for github
   $git_keys           = false,    #are you supplying git repo keys at the same ssh key source?
+  $deploy_rb_tmp_src  = "${module_name}/config/deploy.rb.erb", 
 ) {
 
   #Capfile
@@ -41,7 +42,7 @@ define capistrano::config (
     ensure  => file,
     owner   => $deploy_user,
     group   => $deploy_user,
-    content => template("${module_name}/config/deploy.rb.erb"),
+    content => template($deploy_rb_tmp_src),
   })
 
   $home_path = dirname($deploy_path)
