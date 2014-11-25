@@ -48,6 +48,7 @@ define capistrano::cap (
     copy_exclude       => $copy_exclude, 
     ssh_key_source     => $ssh_key_source,
     git_keys           => $git_keys,
+    deploy_rb_tmp_src  => $deploy_rb_tmp_src,
   }
 
   #I assume the deploy host will not serve code but we will stil deploy here to
