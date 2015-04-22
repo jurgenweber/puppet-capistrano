@@ -43,9 +43,9 @@ define capistrano::cap (
     repo_address       => $repo_address,
     cap_gems           => $cap_gems,
     keep_releases      => $keep_releases,
-    linked_files       => $linked_files, 
-    linked_dirs        => $linked_dirs, 
-    copy_exclude       => $copy_exclude, 
+    linked_files       => $linked_files,
+    linked_dirs        => $linked_dirs,
+    copy_exclude       => $copy_exclude,
     ssh_key_source     => $ssh_key_source,
     git_keys           => $git_keys,
     deploy_rb_tmp_src  => $deploy_rb_tmp_src,
@@ -53,12 +53,13 @@ define capistrano::cap (
 
   #I assume the deploy host will not serve code but we will stil deploy here to
   #do 'stuff' that only one server can do.... like db migrations
-  capistrano::node { $app_name: 
+  capistrano::node { $app_name:
     environments       => $environments,
     deploy_user        => $deploy_user,
     deploy_path        => $deploy_path,
     app_user           => $app_user,
     app_path           => $app_path,
+    repo_address       => $repo_address,
     primary_node       => true,
     cap_ssh_privatekey => true,
     ssh_key_source     => $ssh_key_source,
