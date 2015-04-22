@@ -25,7 +25,7 @@ define capistrano::environments::node (
     $server_role = 'node'
   }
 
-  @@concat::fragment { "${environment}_multistage_servers_${app_name}":
+  @@concat::fragment { "${environment}_multistage_servers_${app_name}_${hostname}":
     target  => "${deploy_path}/config/deploy/${environment}.rb",
     content => template("${module_name}/config/deploy/multistage_servers.rb.erb"),
     order   => '05',
