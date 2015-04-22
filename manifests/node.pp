@@ -18,6 +18,7 @@ define capistrano::node (
   $deploy_path        = "/deploy/${name}",   #the path that you go to, to run the deploy scripts
   $app_user           = 'www-data',
   $app_path           = "/var/www/${name}",
+  $git_keys           = false,
   $cap_ssh_privatekey = false,
   $ssh_key_source     = undef,
 ) {
