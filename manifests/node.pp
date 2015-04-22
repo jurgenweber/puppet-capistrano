@@ -71,7 +71,6 @@ define capistrano::node (
   ensure_resource('concat', "${home_path}/.ssh/config", {
     ensure => present,
     mode   => '644',
-    content => template("${module_name}/ssh_config.erb"),
   })
   if ($cap_ssh_privatekey == true) {
     $priv_key_ensure = file
