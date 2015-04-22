@@ -20,6 +20,14 @@ define capistrano::config (
   $deploy_rb_tmp_src  = "${module_name}/config/deploy.rb.erb",
 ) {
 
+  #deal wiht git repo's with company/repo.name.
+  $app_name_slash_check = split($app_name, '/')
+  if ($app_name_slash_check[1] == '') {
+    $app_name_tag  = $app_name_slash_check
+  } else {
+    $app_name_tag  = join(concat([ $app_name_slash_check[0] ], [ "${app_name_slash_check[1]}" ]), '_')
+  }
+
   #Capfile
   ensure_resource('file', "${deploy_path}/Capfile", {
     ensure  => file,
@@ -28,14 +36,6 @@ define capistrano::config (
     content => template("${module_name}/Capfile.erb"),
     require => Exec["setup_deploy_path_${app_name}"],
   })
-
-  #deal wiht git repo's with company/repo.name.
-  $app_name_slash_check = split($app_name, '/')
-  if ($app_name_slash_check[1] == '') {
-    $app_name_tag  = $app_name_slash_check
-  } else {
-    $app_name_tag  = join(concat([ $app_name_slash_check[0] ], [ "${app_name_slash_check[1]}" ]), '_')
-  }
 
   #capistarno deploy.rb
   ensure_resource('file', "${deploy_path}/config/deploy.rb", {

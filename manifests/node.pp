@@ -23,6 +23,14 @@ define capistrano::node (
   $ssh_key_source     = undef,
 ) {
 
+  #deal wiht git repo's with company/repo.name.
+  $app_name_slash_check = split($app_name, '/')
+  if ($app_name_slash_check[1] == '') {
+    $app_name_tag  = $app_name_slash_check
+  } else {
+    $app_name_tag  = join(concat([ $app_name_slash_check[0] ], [ "${app_name_slash_check[1]}" ]), '_')
+  }
+
   $app_name_and_environment  = prefix($environments, "${app_name}_")
 
   capistrano::environments::node { $app_name_and_environment:
