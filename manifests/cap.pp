@@ -62,6 +62,7 @@ define capistrano::cap (
     repo_address       => $repo_address,
     primary_node       => true,
     cap_ssh_privatekey => true,
+    git_keys           => $git_keys,
     ssh_key_source     => $ssh_key_source,
   }
 
