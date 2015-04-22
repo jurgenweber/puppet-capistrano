@@ -91,4 +91,27 @@ define capistrano::node (
     group  => $deploy_user,
     mode   => '400',
   })
+
+  #github/git needs ssh keys
+  if ($ssh_key_source != undef) and ($git_keys == true) {
+    file { "${deploy_path}/id_rsa":
+      ensure => file,
+      source => "${ssh_key_source}/${app_name}_id_rsa",
+      owner  => $deploy_user,
+      group  => $deploy_user,
+      mode   => '400',
+    }->
+    file { "${deploy_path}/id_rsa.pub":
+      ensure => file,
+      source => "${ssh_key_source}/${app_name}_id_rsa.pub",
+      owner  => $deploy_user,
+      group  => $deploy_user,
+      mode   => '400',
+    }
+    concat::fragment { "${app_name}_hostname":
+      target  => "${home_path}/.ssh/config",
+      content => template("${module_name}/ssh_config.erb"),
+      order   => '0',
+    }
+  }
 }
