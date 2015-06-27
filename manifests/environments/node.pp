@@ -21,7 +21,7 @@ define capistrano::environments::node (
     group   => $deploy_user,
   })
   ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
-    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${deploy_user}:${deploy_user} ${app_path}/${env}/shared/app/config",
+    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${deploy_user}:${deploy_user} ${app_path}/${env}/shared",
     creates => "${app_path}/${env}/shared/app/config",
     path    => '/bin',
   })
