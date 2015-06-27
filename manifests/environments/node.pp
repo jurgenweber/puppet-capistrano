@@ -12,7 +12,7 @@ define capistrano::environments::node (
   $env      = $split_app_name_and_env[1]
 
   #directory setup
-  ensure_resource('exec', "setup_app_path_${app_name}", {
+  ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
     command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${app_user}:${app_user} ${app_path}",
     creates => $app_path,
     path    => '/bin',
