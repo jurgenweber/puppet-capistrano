@@ -19,6 +19,7 @@ define capistrano::environments::node (
     ensure  => directory,
     owner   => $app_user,
     group   => $deploy_user,
+    mode    => 770,
   })
   ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
     command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${deploy_user}:${deploy_user} ${app_path}/${env}/shared",
