@@ -6,6 +6,7 @@ define capistrano::environments::node (
   $primary_node = false,
   $app_user,
   $app_path,
+  $deploy_user,
 ) {
 
   $split_app_name_and_env = split($name, '_')
@@ -15,7 +16,7 @@ define capistrano::environments::node (
 
   #directory setup
   ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
-    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${app_user}:${app_user} ${app_path}",
+    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${app_user}:${deploy_user} ${app_path}",
     creates => "${app_path}/${env}/shared/app/config",
     path    => '/bin',
   })

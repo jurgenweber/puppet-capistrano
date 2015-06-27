@@ -39,6 +39,7 @@ define capistrano::node (
     deploy_path  => $deploy_path,
     app_path     => $app_path,
     app_user     => $app_user,
+    deploy_user  => $deploy_user,
   }
 
   $home_path = dirname($deploy_path)
