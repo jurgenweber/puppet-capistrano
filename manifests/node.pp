@@ -38,7 +38,6 @@ define capistrano::node (
     primary_node => $primary_node,
     deploy_path  => $deploy_path,
     app_path     => $app_path,
-    app_user     => $app_user,
     deploy_user  => $deploy_user,
   }
 
