@@ -6,10 +6,17 @@ define capistrano::environments::node (
   $primary_node = false,
 ) {
 
-  $split_app_name_and_environment = split($name, '_')
+  $split_app_name_and_env = split($name, '_')
 
-  $app_name    = $split_app_name_and_environment[0]
-  $environment = $split_app_name_and_environment[1]
+  $app_name = $split_app_name_and_env[0]
+  $env      = $split_app_name_and_env[1]
+
+  #directory setup
+  ensure_resource('exec', "setup_app_path_${app_name}", {
+    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${app_user}:${app_user} ${app_path}",
+    creates => $app_path,
+    path    => '/bin',
+  })
 
   #deal wiht git repo's with company/repo.name.
   $app_name_slash_check = split($app_name, '/')
@@ -25,10 +32,10 @@ define capistrano::environments::node (
     $server_role = 'node'
   }
 
-  @@concat::fragment { "${environment}_multistage_servers_${app_name}_${hostname}":
-    target  => "${deploy_path}/config/deploy/${environment}.rb",
+  @@concat::fragment { "${env}_multistage_servers_${app_name}_${hostname}":
+    target  => "${deploy_path}/config/deploy/${env}.rb",
     content => template("${module_name}/config/deploy/multistage_servers.rb.erb"),
     order   => '05',
-    tag     => "${environment}_deploy_node_${app_name_tag}",
+    tag     => "${env}_deploy_node_${app_name_tag}",
   }
 }
