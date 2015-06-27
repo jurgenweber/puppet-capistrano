@@ -4,6 +4,8 @@
 define capistrano::environments::node (
   $deploy_path,
   $primary_node = false,
+  $app_user,
+  $app_path,
 ) {
 
   $split_app_name_and_env = split($name, '_')
