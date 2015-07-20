@@ -25,6 +25,7 @@ define capistrano::cap (
   $ssh_key_source     = undef,
   $git_keys           = false,                       #are you supplying git keys?
   $deploy_rb_tmp_src  = "${module_name}/config/deploy.rb.erb",
+  $external_cleanup   = false,
 ) {
 
   #install me
@@ -64,6 +65,7 @@ define capistrano::cap (
     cap_ssh_privatekey => true,
     git_keys           => $git_keys,
     ssh_key_source     => $ssh_key_source,
+    external_cleanup   => $external_cleanup,
   }
 
 }
