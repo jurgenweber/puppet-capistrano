@@ -50,6 +50,8 @@ define capistrano::node (
     deploy_path      => $deploy_path,
     external_cleanup => $external_cleanup,
     app_path         => $app_path,
+    app_user         => $app_user,
+    deploy_user      => $deploy_user,
   }
 
   $home_path = dirname($deploy_path)
@@ -77,11 +79,6 @@ define capistrano::node (
   ensure_resource('exec', "setup_deploy_path_${app_name}", {
     command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
     creates => $deploy_path,
-    path    => '/bin',
-  })
-  ensure_resource('exec', "setup_app_path_${app_name}", {
-    command => "mkdir -p ${app_path}/config/app && chown -R ${app_user}:${app_user} ${app_path}",
-    creates => $app_path,
     path    => '/bin',
   })
 
