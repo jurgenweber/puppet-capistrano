@@ -38,7 +38,7 @@ define capistrano::node (
   if ($external_cleanup == true) { #it means we are going to use this file to clean up our application via  cron in the releases folder
     ensure_resource('file', '/usr/local/bin/clean_up_deploy_dir.sh', {
       ensure  => file,
-      source  => 'puppet:///modules/component_capistrano/clean_up_deploy_dir.sh',
+      source  => 'puppet:///modules/capistrano/clean_up_deploy_dir.sh',
       mode    => 0755,
       owner   => 'www-data',
       group   => 'www-data',
