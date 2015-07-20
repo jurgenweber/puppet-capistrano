@@ -22,6 +22,7 @@ define capistrano::node (
   $git_keys           = false,
   $cap_ssh_privatekey = false,
   $ssh_key_source     = undef,
+  $external_cleanup   = false, #it means you need "Rake::Task['deploy:cleanup'].clear_actions" in your deploy.rb
 ) {
 
   #deal wiht git repo's with company/repo.name.
@@ -34,9 +35,21 @@ define capistrano::node (
 
   $app_name_and_environment  = prefix($environments, "${app_name}_")
 
+  if ($external_cleanup == true) { #it means we are going to use this file to clean up our application via  cron in the releases folder
+    ensure_resource('file', '/usr/local/bin/clean_up_deploy_dir.sh', {
+      ensure  => file,
+      source  => 'puppet:///modules/component_capistrano/clean_up_deploy_dir.sh',
+      mode    => 0755,
+      owner   => 'www-data',
+      group   => 'www-data',
+    })
+  }
+
   capistrano::environments::node { $app_name_and_environment:
-    primary_node => $primary_node,
-    deploy_path  => $deploy_path,
+    primary_node     => $primary_node,
+    deploy_path      => $deploy_path,
+    external_cleanup => $external_cleanup,
+    app_path         => $app_path,
   }
 
   $home_path = dirname($deploy_path)
