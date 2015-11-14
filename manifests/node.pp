@@ -39,7 +39,7 @@ define capistrano::node (
     ensure_resource('file', '/usr/local/bin/clean_up_deploy_dir.sh', {
       ensure  => file,
       source  => 'puppet:///modules/capistrano/clean_up_deploy_dir.sh',
-      mode    => 0755,
+      mode    => '0755',
       owner   => 'www-data',
       group   => 'www-data',
     })
@@ -60,7 +60,7 @@ define capistrano::node (
     ensure   => directory,
     owner    => $app_user,
     group    => $deploy_user,
-    mode     => 770,
+    mode     => '0770',
   })
 
   #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
