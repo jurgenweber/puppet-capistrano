@@ -56,11 +56,19 @@ define capistrano::node (
 
   $home_path = dirname($deploy_path)
 
+  ensure_resource('exec', "setup_app_path_${app_name}", {
+    command => "mkdir -p ${app_path} && chown -R ${deploy_user}:${deploy_user} ${app_path}",
+    creates => "${app_path}",
+    path    => '/bin',
+    require => User[$deploy_user],
+  })
+
   ensure_resource('file', $app_path, {
     ensure   => directory,
     owner    => $app_user,
     group    => $deploy_user,
     mode     => '0770',
+    require  => [ User[$deploy_user], Exec["setup_app_path_${app_name}"] ],
   })
 
   #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
@@ -80,18 +88,19 @@ define capistrano::node (
     command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
     creates => $deploy_path,
     path    => '/bin',
-    require => [ Group[$deploy_user], User[$deploy_user] ],
+    require => User[$deploy_user],
   })
 
   #ssh key for sshing between nodes for capistrano
   ensure_resource('file', "${home_path}/.ssh", {
-    ensure => directory,
-    owner  => $deploy_user,
-    group  => $deploy_user,
+    ensure  => directory,
+    owner   => $deploy_user,
+    group   => $deploy_user,
+    require => Exec["setup_deploy_path_${app_name}"],
   })
   ensure_resource('concat', "${home_path}/.ssh/config", {
-    ensure => present,
-    mode   => '644',
+    ensure  => present,
+    mode    => '644',
   })
   if ($cap_ssh_privatekey == true) {
     $priv_key_ensure = file
@@ -99,35 +108,38 @@ define capistrano::node (
     $priv_key_ensure = absent
   }
   ensure_resource('file', "${home_path}/.ssh/id_rsa", {
-    ensure => $priv_key_ensure,
-    source => "${ssh_key_source}/id_rsa",
-    owner  => $deploy_user,
-    group  => $deploy_user,
-    mode   => '400',
+    ensure  => $priv_key_ensure,
+    source  => "${ssh_key_source}/id_rsa",
+    owner   => $deploy_user,
+    group   => $deploy_user,
+    mode    => '400',
+    require => File["${home_path}/.ssh"],
   })
   ensure_resource('file', "${home_path}/.ssh/authorized_keys", {
-    ensure => file,
-    source => "${ssh_key_source}/id_rsa.pub",
-    owner  => $deploy_user,
-    group  => $deploy_user,
-    mode   => '400',
+    ensure  => file,
+    source  => "${ssh_key_source}/id_rsa.pub",
+    owner   => $deploy_user,
+    group   => $deploy_user,
+    mode    => '400',
+    require => File["${home_path}/.ssh"],
   })
 
   #github/git needs ssh keys
   if ($ssh_key_source != undef) and ($git_keys == true) {
     file { "${deploy_path}/id_rsa":
-      ensure => file,
-      source => "${ssh_key_source}/${app_name}_id_rsa",
-      owner  => $deploy_user,
-      group  => $deploy_user,
-      mode   => '400',
+      ensure  => file,
+      source  => "${ssh_key_source}/${app_name}_id_rsa",
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      mode    => '400',
+      require => Exec["setup_deploy_path_${app_name}"],
     }->
     file { "${deploy_path}/id_rsa.pub":
-      ensure => file,
-      source => "${ssh_key_source}/${app_name}_id_rsa.pub",
-      owner  => $deploy_user,
-      group  => $deploy_user,
-      mode   => '400',
+      ensure  => file,
+      source  => "${ssh_key_source}/${app_name}_id_rsa.pub",
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      mode    => '400',
     }
     concat::fragment { "${app_name}_hostname":
       target  => "${home_path}/.ssh/config",

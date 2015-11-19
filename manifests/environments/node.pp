@@ -16,16 +16,18 @@ define capistrano::environments::node (
   $env      = $split_app_name_and_env[1]
 
   #directory setup
+  ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
+    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${deploy_user}:${deploy_user} ${app_path}/${env}/shared",
+    creates => "${app_path}/${env}/shared/app/config",
+    path    => '/bin',
+    require => User[$deploy_user],
+  })
   ensure_resource('file', "${app_path}/${env}", {
     ensure  => directory,
     owner   => $app_user,
     group   => $deploy_user,
     mode    => '0770',
-  })
-  ensure_resource('exec', "setup_app_path_${env}_${app_name}", {
-    command => "mkdir -p ${app_path}/${env}/shared/app/config && chown -R ${deploy_user}:${deploy_user} ${app_path}/${env}/shared",
-    creates => "${app_path}/${env}/shared/app/config",
-    path    => '/bin',
+    require => [ User[$deploy_user], Exec["setup_app_path_${env}_${app_name}"] ],
   })
 
   #deal wiht git repo's with company/repo.name.
