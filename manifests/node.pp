@@ -80,6 +80,7 @@ define capistrano::node (
     command => "mkdir -p ${deploy_path}/config/deploy && chown -R ${deploy_user}:${deploy_user} ${deploy_path}",
     creates => $deploy_path,
     path    => '/bin',
+    require => [ Group[$deploy_user], User[$deploy_user] ],
   })
 
   #ssh key for sshing between nodes for capistrano
