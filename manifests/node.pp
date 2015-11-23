@@ -96,7 +96,7 @@ define capistrano::node (
     ensure  => directory,
     owner   => $deploy_user,
     group   => $deploy_user,
-    require => Exec["setup_deploy_path_${app_name}"],
+    #require => Exec["setup_deploy_path_${app_name}"], #deploy path changes with every app (/deploy/asdf/api) hence this collides but need order?
   })
   ensure_resource('concat', "${home_path}/.ssh/config", {
     ensure  => present,
