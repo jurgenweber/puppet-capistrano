@@ -73,12 +73,12 @@ define capistrano::node (
 
   #the stuff that needs to be the same for all definitions should maybe go into init or install and only require?
   ensure_resource('group', $deploy_user, {
-    gid     => 3001,
+    gid     => 5001,
   })
   ensure_resource('user', $deploy_user, {
     shell   => '/bin/bash',
-    uid     => 3001,
-    gid     => 3001,
+    uid     => 5001,
+    gid     => 5001,
     home    => $home_path,
     require => Group[$deploy_user],
   })
