@@ -42,15 +42,15 @@ define capistrano::config (
       owner   => $deploy_user,
       group   => $deploy_user,
       content => template($deploy_rb_tmp_src);
-    "${deploy_path}/lib",
+    "${deploy_path}/lib":
       ensure  => directory,
       owner   => $deploy_user,
       group   => $deploy_user;
-    "${deploy_path}/lib/capistrano",
+    "${deploy_path}/lib/capistrano":
       ensure  => directory,
       owner   => $deploy_user,
       group   => $deploy_user;
-    "${deploy_path}/lib/capistrano/tasks",
+    "${deploy_path}/lib/capistrano/tasks":
       ensure  => directory,
       owner   => $deploy_user,
       group   => $deploy_user;
