@@ -11,6 +11,7 @@ define capistrano::config (
   $scm,
   $repo_address,
   $cap_gems           = [],
+  $cap_import         = [],
   $keep_releases      = '3',
   $linked_files       = [],
   $linked_dirs        = [],
@@ -29,21 +30,31 @@ define capistrano::config (
   }
 
   #Capfile
-  ensure_resource('file', "${deploy_path}/Capfile", {
-    ensure  => file,
-    owner   => $deploy_user,
-    group   => $deploy_user,
-    content => template("${module_name}/Capfile.erb"),
-    require => Exec["setup_deploy_path_${app_name}"],
-  })
-
-  #capistarno deploy.rb
-  ensure_resource('file', "${deploy_path}/config/deploy.rb", {
-    ensure  => file,
-    owner   => $deploy_user,
-    group   => $deploy_user,
-    content => template($deploy_rb_tmp_src),
-  })
+  file {
+    "${deploy_path}/Capfile":
+      ensure  => file,
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      content => template("${module_name}/Capfile.erb"),
+      require => Exec["setup_deploy_path_${app_name}"];
+    "${deploy_path}/config/deploy.rb":
+      ensure  => file,
+      owner   => $deploy_user,
+      group   => $deploy_user,
+      content => template($deploy_rb_tmp_src);
+    "${deploy_path}/lib",
+      ensure  => directory,
+      owner   => $deploy_user,
+      group   => $deploy_user;
+    "${deploy_path}/lib/capistrano",
+      ensure  => directory,
+      owner   => $deploy_user,
+      group   => $deploy_user;
+    "${deploy_path}/lib/capistrano/tasks",
+      ensure  => directory,
+      owner   => $deploy_user,
+      group   => $deploy_user;
+  }
 
   $home_path = dirname($deploy_path)
 

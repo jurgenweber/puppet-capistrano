@@ -24,8 +24,15 @@ require 'capistrano/deploy'
 # Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 
-<% if @cap_gems != [] -%> 
+<% if @cap_gems != [] -%>
 <% @cap_gems.each do |gem| -%>
 require '<%= gem %>'
+<% end -%>
+<% end -%>
+
+
+<% if @cap_import != [] -%>
+<% @cap_import.each do |import| -%>
+import '<%= import %>'
 <% end -%>
 <% end -%>

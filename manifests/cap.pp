@@ -18,6 +18,7 @@ define capistrano::cap (
   $scm                = 'git',
   $repo_address,                                     #github.com:/foo/
   $cap_gems           = [],
+  $cap_import         = [],
   $keep_releases      = '3',
   $linked_files       = [],
   $linked_dirs        = [],
@@ -43,6 +44,7 @@ define capistrano::cap (
     scm                => $scm,
     repo_address       => $repo_address,
     cap_gems           => $cap_gems,
+    cap_import         => $cap_import,
     keep_releases      => $keep_releases,
     linked_files       => $linked_files,
     linked_dirs        => $linked_dirs,
